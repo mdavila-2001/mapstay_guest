@@ -8,10 +8,13 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mapstay.mapstay_guest"
+      "bundleIdentifier": "com.mapstay.mapstayguest",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "MapStay necesita acceso a tu ubicación para mostrar alojamientos cercanos."
+      }
     },
     "android": {
-      "package": "com.mapstay.mapstay_guest",
+      "package": "com.mapstay.mapstayguest",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
