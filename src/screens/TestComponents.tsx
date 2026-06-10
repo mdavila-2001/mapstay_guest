@@ -5,12 +5,46 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { CustomModal } from '../components/CustomModal';
+import { CustomTable, ColumnConfig } from '../components/CustomTable';
+import { useNotification } from '../components/NotificationProvider';
+
+interface BookingData {
+    id: string;
+    guestName: string;
+    room: string;
+    checkIn: string;
+    status: 'confirmed' | 'pending' | 'cancelled';
+    total: number;
+}
+
+interface PropertyLog {
+    id: string;
+    propertyName: string;
+    location: string;
+    hostName: string;
+    rating: number;
+    occupancyRate: string;
+    revenue: string;
+}
+
+const BOOKINGS_DATA: BookingData[] = [
+    { id: '1', guestName: 'Alejandro M.', room: 'Suite Deluxe 302', checkIn: '08/06/2026', status: 'confirmed', total: 240 },
+    { id: '2', guestName: 'Mariana S.', room: 'Standard 104', checkIn: '09/06/2026', status: 'pending', total: 110 },
+    { id: '3', guestName: 'Carlos T.', room: 'Cabaña Forest', checkIn: '12/06/2026', status: 'cancelled', total: 320 },
+];
+
+const PROPERTY_LOGS: PropertyLog[] = [
+    { id: '1', propertyName: 'MapStay Central Loft', location: 'La Paz, Centro', hostName: 'Ramiro P.', rating: 4.8, occupancyRate: '88%', revenue: '$1,200' },
+    { id: '2', propertyName: 'MapStay Lake Cabin', location: 'Copacabana', hostName: 'Elena V.', rating: 4.9, occupancyRate: '95%', revenue: '$2,450' },
+    { id: '3', propertyName: 'MapStay Cozy Apt', location: 'Santa Cruz', hostName: 'Jorge G.', rating: 4.6, occupancyRate: '75%', revenue: '$980' },
+];
 
 const StarIcon = ({ color = '#fff' }: { color?: string }) => (
     <View style={[styles.starIcon, { backgroundColor: color }]} />
 );
 
 export default function TestComponents() {
+    const { showToast, showAlert } = useNotification();
   // Input states
     const [textVal, setTextVal] = useState('');
     const [numberVal, setNumberVal] = useState('');
@@ -22,6 +56,107 @@ export default function TestComponents() {
     // Modal states
     const [dialogVisible, setDialogVisible] = useState(false);
     const [sheetVisible, setSheetVisible] = useState(false);
+
+    // Table states & handlers
+    const [pressedRowText, setPressedRowText] = useState<string>('');
+    const handleRowPress = (item: BookingData) => {
+      setPressedRowText(`Fila presionada: ${item.guestName} - ${item.room} ($${item.total})`);
+    };
+
+    // Columns config for bookings (flex based)
+    const bookingColumns: ColumnConfig<BookingData>[] = [
+      {
+        key: 'guestName',
+        title: 'Huésped',
+        flex: 1.8,
+        align: 'left',
+      },
+      {
+        key: 'room',
+        title: 'Habitación',
+        flex: 2.2,
+        align: 'left',
+      },
+      {
+        key: 'status',
+        title: 'Estado',
+        flex: 1.5,
+        align: 'center',
+        render: (item) => {
+          let badgeStyle = styles.badgePending;
+          let badgeText = 'Pendiente';
+          if (item.status === 'confirmed') {
+            badgeStyle = styles.badgeConfirmed;
+            badgeText = 'Confirmada';
+          } else if (item.status === 'cancelled') {
+            badgeStyle = styles.badgeCancelled;
+            badgeText = 'Cancelada';
+          }
+          return (
+            <View style={[styles.badgeBase, badgeStyle]}>
+              <Text style={styles.badgeText}>{badgeText}</Text>
+            </View>
+          );
+        },
+      },
+      {
+        key: 'total',
+        title: 'Total',
+        flex: 1.2,
+        align: 'right',
+        render: (item) => (
+          <Text style={styles.priceText}>
+            ${item.total.toFixed(2)}
+          </Text>
+        ),
+      },
+    ];
+
+    // Columns config for property stats (horizontal scroll based with fixed widths)
+    const propertyColumns: ColumnConfig<PropertyLog>[] = [
+      {
+        key: 'propertyName',
+        title: 'Propiedad',
+        width: 160,
+        align: 'left',
+      },
+      {
+        key: 'location',
+        title: 'Ubicación',
+        width: 120,
+        align: 'left',
+      },
+      {
+        key: 'hostName',
+        title: 'Anfitrión',
+        width: 100,
+        align: 'left',
+      },
+      {
+        key: 'rating',
+        title: 'Rating',
+        width: 80,
+        align: 'center',
+        render: (item) => (
+          <Text style={styles.ratingText}>⭐ {item.rating.toFixed(1)}</Text>
+        ),
+      },
+      {
+        key: 'occupancyRate',
+        title: 'Ocupación',
+        width: 90,
+        align: 'center',
+      },
+      {
+        key: 'revenue',
+        title: 'Ingresos',
+        width: 100,
+        align: 'right',
+        render: (item) => (
+          <Text style={styles.revenueText}>{item.revenue}</Text>
+        ),
+      },
+    ];
 
     const countryOptions = [
         { label: 'Bolivia', value: 'bo' },
@@ -271,6 +406,126 @@ export default function TestComponents() {
                             />
                         </View>
                     </View>
+
+                    {/* SECTION: CUSTOMTABLE SHOWCASE */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>7. Tabla Modular (CustomTable - Flex Layout)</Text>
+                        
+                        <View style={styles.showcaseItem}>
+                            <Text style={styles.itemLabel}>Tabla de Reservas (Zebra Striped & Interactive Row Press)</Text>
+                            <CustomTable
+                                data={BOOKINGS_DATA}
+                                columns={bookingColumns}
+                                keyExtractor={(item) => item.id}
+                                zebraStriped={true}
+                                onRowPress={handleRowPress}
+                            />
+                            {pressedRowText ? (
+                                <Text style={styles.pressedTextFeedback}>{pressedRowText}</Text>
+                            ) : null}
+                        </View>
+                    </View>
+
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>8. Tabla Responsiva (CustomTable - Horizontal Scroll)</Text>
+                        
+                        <View style={styles.showcaseItem}>
+                            <Text style={styles.itemLabel}>Estadísticas de Propiedades (Anchos Fijos, Scrollable)</Text>
+                            <CustomTable
+                                data={PROPERTY_LOGS}
+                                columns={propertyColumns}
+                                keyExtractor={(item) => item.id}
+                                horizontalScroll={true}
+                                zebraStriped={false}
+                            />
+                        </View>
+                    </View>
+
+                    {/* SECTION: GLOBAL NOTIFICATIONS & ALERTS SHOWCASE */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>9. Notificaciones y Alertas Globales (`useNotification`)</Text>
+
+                        {/* A. TOASTS */}
+                        <Text style={styles.itemLabel}>Notificaciones Efímeras (Toasts)</Text>
+                        <View style={styles.row}>
+                            <Button
+                                text="Success Toast"
+                                variant="primary"
+                                style={styles.flexItem}
+                                onPress={() => showToast({
+                                    message: '¡Reserva confirmada con éxito!',
+                                    type: 'success',
+                                })}
+                            />
+                            <Button
+                                text="Info Toast"
+                                variant="secondary"
+                                style={styles.flexItem}
+                                onPress={() => showToast({
+                                    message: 'Nueva habitación disponible en Copacabana.',
+                                    type: 'info',
+                                    duration: 4000,
+                                })}
+                            />
+                        </View>
+                        <View style={[styles.row, { marginTop: 8 }]}>
+                            <Button
+                                text="Error Toast"
+                                variant="outline"
+                                style={styles.flexItem}
+                                onPress={() => showToast({
+                                    message: 'Error crítico al procesar pago: Operación abortada (☠️).',
+                                    type: 'error',
+                                })}
+                            />
+                            <Button
+                                text="Warning Toast"
+                                variant="secondary"
+                                style={styles.flexItem}
+                                onPress={() => showToast({
+                                    message: 'Peligro: El token de acceso expira en 5 minutos.',
+                                    type: 'warning',
+                                })}
+                            />
+                        </View>
+
+                        {/* B. CONFIRMATION ALERTS */}
+                        <Text style={[styles.itemLabel, { marginTop: 16 }]}>Diálogos de Confirmación Críticos (Alertas)</Text>
+                        <View style={styles.row}>
+                            <Button
+                                text="Info Alert"
+                                variant="secondary"
+                                style={styles.flexItem}
+                                onPress={() => showAlert({
+                                    title: 'Información de Cuenta',
+                                    message: 'Los cambios de perfil se aplican inmediatamente en toda la red de MapStay.',
+                                    type: 'info',
+                                    confirmText: 'Entendido',
+                                    onConfirm: () => showToast({ message: 'Alerta leída.', type: 'info' }),
+                                })}
+                            />
+                            <Button
+                                text="Confirm Alert"
+                                variant="outline"
+                                style={styles.flexItem}
+                                onPress={() => showAlert({
+                                    title: '¿Eliminar Reserva?',
+                                    message: 'Esta acción cancelará la reserva del Huésped Alejandro M. permanentemente. ¿Deseas continuar?',
+                                    type: 'error',
+                                    confirmText: 'Eliminar',
+                                    cancelText: 'Volver',
+                                    onConfirm: () => showToast({
+                                        message: 'La reserva ha sido cancelada exitosamente.',
+                                        type: 'success',
+                                    }),
+                                    onCancel: () => showToast({
+                                        message: 'Cancelación abortada.',
+                                        type: 'info',
+                                    }),
+                                })}
+                            />
+                        </View>
+                    </View>
                 </ScrollView>
             </SafeAreaView>
 
@@ -421,5 +676,57 @@ const styles = StyleSheet.create({
     },
     applyFilterBtn: {
         marginTop: 8,
+    },
+    badgeBase: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 6,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    badgeConfirmed: {
+        backgroundColor: '#003734',
+        borderWidth: 1,
+        borderColor: '#59dad1',
+    },
+    badgePending: {
+        backgroundColor: '#222a3d',
+        borderWidth: 1,
+        borderColor: '#8e9198',
+    },
+    badgeCancelled: {
+        backgroundColor: '#3b1212',
+        borderWidth: 1,
+        borderColor: '#f87171',
+    },
+    badgeText: {
+        fontFamily: 'Inter',
+        fontSize: 11,
+        fontWeight: '600',
+        color: '#dae2fd',
+    },
+    priceText: {
+        fontFamily: 'Inter',
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#59dad1',
+    },
+    ratingText: {
+        fontFamily: 'Inter',
+        fontSize: 12,
+        color: '#dae2fd',
+    },
+    revenueText: {
+        fontFamily: 'Inter',
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#59dad1',
+    },
+    pressedTextFeedback: {
+        fontFamily: 'Inter',
+        fontSize: 12,
+        color: '#38BDF8',
+        marginTop: 8,
+        fontStyle: 'italic',
     },
 });
