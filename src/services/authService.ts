@@ -4,7 +4,7 @@ import { LoginCredentials, RegisterPayload, AuthResponse } from '../types';
 export const authService = {
     login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
         try {
-            const response = await apiClient.post<AuthResponse>('/users/', credentials);
+            const response = await apiClient.post<AuthResponse>('/cliente/login', credentials);
             return response.data;
         } catch (error: any) {
             throw new Error(error.message);

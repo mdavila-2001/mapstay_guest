@@ -1,12 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text, View, ScrollView, Animated, Pressable, Platform } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { CustomModal } from '../components/CustomModal';
 import { CustomTable, ColumnConfig } from '../components/CustomTable';
 import { useNotification } from '../components/NotificationProvider';
+import { Header } from '../components/Header';
+import { Sidebar } from '../components/Sidebar';
+import { useAuth } from '../hooks/useAuth';
 
 interface BookingData {
     id: string;
@@ -45,51 +48,96 @@ const StarIcon = ({ color = '#fff' }: { color?: string }) => (
 
 export default function TestComponents() {
     const { showToast, showAlert } = useNotification();
-  // Input states
+    const { logout } = useAuth();
     const [textVal, setTextVal] = useState('');
     const [numberVal, setNumberVal] = useState('');
     const [passwordVal, setPasswordVal] = useState('');
     const [dateVal, setDateVal] = useState<Date | undefined>(undefined);
     const [selectVal, setSelectVal] = useState('');
     const [errorInputVal, setErrorInputVal] = useState('Invalid value format');
-
-    // Modal states
     const [dialogVisible, setDialogVisible] = useState(false);
     const [sheetVisible, setSheetVisible] = useState(false);
-
-    // Table states & handlers
     const [pressedRowText, setPressedRowText] = useState<string>('');
     const handleRowPress = (item: BookingData) => {
-      setPressedRowText(`Fila presionada: ${item.guestName} - ${item.room} ($${item.total})`);
+        setPressedRowText(`Fila presionada: ${item.guestName} - ${item.room} ($${item.total})`);
     };
 
-    // Columns config for bookings (flex based)
+    const [currentRoute, setCurrentRoute] = useState<string>('home');
+    const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+    const sidebarAnim = React.useRef(new Animated.Value(0)).current;
+
+    const openSidebar = () => {
+      setSidebarOpen(true);
+      Animated.timing(sidebarAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const closeSidebar = () => {
+      Animated.timing(sidebarAnim, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }).start(() => {
+        setSidebarOpen(false);
+      });
+    };
+
+    const handleSidebarNavigate = (screenName: string) => {
+        if (screenName === 'logout') {
+            closeSidebar();
+            showAlert({
+                title: '¿Cerrar Sesión?',
+                message: '¿Estás seguro de que deseas salir de MapStay Guest?',
+                type: 'warning',
+                confirmText: 'Salir',
+                cancelText: 'Cancelar',
+                onConfirm: async () => {
+                    await logout();
+                    showToast({
+                        message: 'Sesión cerrada correctamente.',
+                        type: 'info',
+                    });
+                },
+            });
+        } else {
+            setCurrentRoute(screenName);
+            closeSidebar();
+            showToast({
+                message: `Navegando a: ${screenName === 'home' ? 'Inicio' : screenName === 'bookings' ? 'Mis Reservas' : 'Modo Host'}`,
+                type: 'info',
+            });
+        }
+    };
+
     const bookingColumns: ColumnConfig<BookingData>[] = [
-      {
-        key: 'guestName',
-        title: 'Huésped',
-        flex: 1.8,
-        align: 'left',
-      },
-      {
-        key: 'room',
-        title: 'Habitación',
-        flex: 2.2,
-        align: 'left',
-      },
-      {
-        key: 'status',
-        title: 'Estado',
-        flex: 1.5,
-        align: 'center',
-        render: (item) => {
-          let badgeStyle = styles.badgePending;
-          let badgeText = 'Pendiente';
-          if (item.status === 'confirmed') {
-            badgeStyle = styles.badgeConfirmed;
-            badgeText = 'Confirmada';
-          } else if (item.status === 'cancelled') {
-            badgeStyle = styles.badgeCancelled;
+        {
+            key: 'guestName',
+            title: 'Huésped',
+            flex: 1.8,
+            align: 'left',
+        },
+        {
+            key: 'room',
+            title: 'Habitación',
+            flex: 2.2,
+            align: 'left',
+        },
+        {
+            key: 'status',
+            title: 'Estado',
+            flex: 1.5,
+            align: 'center',
+            render: (item) => {
+                let badgeStyle = styles.badgePending;
+                let badgeText = 'Pendiente';
+                if (item.status === 'confirmed') {
+                    badgeStyle = styles.badgeConfirmed;
+                    badgeText = 'Confirmada';
+                } else if (item.status === 'cancelled') {
+                    badgeStyle = styles.badgeCancelled;
             badgeText = 'Cancelada';
           }
           return (
@@ -168,9 +216,14 @@ export default function TestComponents() {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView style={styles.safeArea}>
+            <View style={styles.safeArea}>
                 <StatusBar style="light" />
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <Header
+                    title="MapStay Showcase"
+                    onPressMenu={openSidebar}
+                    onPressLogout={() => handleSidebarNavigate('logout')}
+                />
+                        <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.header}>
                         <Text style={styles.title}>MapStay Design System</Text>
                         <Text style={styles.subtitle}>Component Showcase (Modo Oscuro)</Text>
@@ -474,7 +527,7 @@ export default function TestComponents() {
                                 variant="outline"
                                 style={styles.flexItem}
                                 onPress={() => showToast({
-                                    message: 'Error crítico al procesar pago: Operación abortada (☠️).',
+                                    message: 'Error crítico al procesar pago: Operación abortada.',
                                     type: 'error',
                                 })}
                             />
@@ -526,8 +579,8 @@ export default function TestComponents() {
                             />
                         </View>
                     </View>
-                </ScrollView>
-            </SafeAreaView>
+                        </ScrollView>
+            </View>
 
             {/* DIALOG VARIANT SHOWCASE (FADE) */}
             <CustomModal
@@ -584,6 +637,37 @@ export default function TestComponents() {
                     onPress={() => setSheetVisible(false)}
                 />
             </CustomModal>
+
+            {/* OVERLAY DE BARRA LATERAL (SIDEBAR DRAWER) */}
+            {sidebarOpen && (
+                <View style={StyleSheet.absoluteFill}>
+                    <Pressable
+                        style={styles.sidebarBackdrop}
+                        onPress={closeSidebar}
+                    />
+                    <Animated.View
+                        style={[
+                            styles.sidebarDrawer,
+                            {
+                                transform: [
+                                    {
+                                        translateX: sidebarAnim.interpolate({
+                                            inputRange: [0, 1],
+                                            outputRange: [-280, 0],
+                                        }),
+                                    },
+                                ],
+                            },
+                        ]}
+                    >
+                        <Sidebar
+                            currentRoute={currentRoute}
+                            onNavigate={handleSidebarNavigate}
+                            onClose={closeSidebar}
+                        />
+                    </Animated.View>
+                </View>
+            )}
         </SafeAreaProvider>
     );
 }
@@ -728,5 +812,33 @@ const styles = StyleSheet.create({
         color: '#38BDF8',
         marginTop: 8,
         fontStyle: 'italic',
+    },
+    sidebarBackdrop: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(6, 14, 32, 0.6)',
+    },
+    sidebarDrawer: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: 280,
+        maxWidth: '80%',
+        backgroundColor: '#131b2e',
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 4, height: 0 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+            },
+            android: {
+                elevation: 16,
+            },
+        }),
     },
 });

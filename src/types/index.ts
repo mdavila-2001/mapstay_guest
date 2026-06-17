@@ -10,6 +10,8 @@ export interface RegisterPayload extends LoginCredentials {
 
 export interface AuthResponse {
     id?: number;
+    nombrecompleto: string;
     email: string;
+    telefono: string;
     token?: string;
 }
