@@ -27,7 +27,13 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "MapStay necesita acceso a tu ubicación para mostrar alojamientos cercanos."
+        }
+      ]
     ]
   }
 }

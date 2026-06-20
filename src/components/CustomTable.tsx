@@ -8,6 +8,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
+import { TYPOGRAPHY } from '../core/theme/theme';
 
 export interface ColumnConfig<T> {
   readonly key: string;
@@ -39,7 +40,7 @@ export function CustomTable<T>({
   emptyComponent,
   containerStyle,
 }: Readonly<CustomTableProps<T>>) {
-  
+
   const getAlignmentStyle = (align?: 'left' | 'center' | 'right') => {
     switch (align) {
       case 'center':
@@ -78,10 +79,8 @@ export function CustomTable<T>({
     return { flex: column.flex ?? 1 };
   };
 
-  // Selección de estrategia de estilos para columnas basada en la configuración de scroll
   const getColumnStyle = horizontalScroll ? getScrollColumnStyle : getFlexColumnStyle;
 
-  // Renderizadores de estructura de tabla según scrollable
   const renderScrollableTable = (body: React.ReactNode) => (
     <ScrollView horizontal showsHorizontalScrollIndicator={true}>
       <View>{body}</View>
@@ -92,14 +91,13 @@ export function CustomTable<T>({
 
   const renderTableWrapper = horizontalScroll ? renderScrollableTable : renderStaticTable;
 
-  // Renderiza el encabezado de la tabla
   const renderHeader = () => {
     return (
       <View style={styles.headerRow}>
         {columns.map((col) => {
           const alignment = getAlignmentStyle(col.align);
           const colStyle = getColumnStyle(col);
-          
+
           return (
             <View
               key={`header-${col.key}`}
@@ -183,7 +181,6 @@ export function CustomTable<T>({
     );
   };
 
-  // Renderiza el contenido principal: datos o vista vacía
   const renderContent = () => {
     if (data.length === 0) {
       return emptyComponent || (
@@ -210,18 +207,18 @@ export function CustomTable<T>({
 }
 
 const styles = StyleSheet.create({
-  // Contenedor principal de la tabla con bordes redondeados y recorte de filas
+
   tableOuterContainer: {
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#334155', // slate-700
+    borderColor: '#334155',
     overflow: 'hidden',
-    backgroundColor: '#0b1326', // surface / background
+    backgroundColor: '#0b1326',
   },
   tableInnerContainer: {
     width: '100%',
   },
-  // Fila del encabezado (surface-container)
+
   headerRow: {
     flexDirection: 'row',
     backgroundColor: '#171f33',
@@ -235,14 +232,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     justifyContent: 'center',
   },
-  // Textos de encabezado: fuente Inter, label-sm o label-md en negrita
+
   headerText: {
-    fontFamily: 'Inter',
-    fontSize: 13,
+    fontFamily: TYPOGRAPHY.fontFamily.bold,
+    fontSize: TYPOGRAPHY.sizes.xs,
     fontWeight: '700',
-    color: '#dae2fd', // on-surface
+    color: '#dae2fd',
   },
-  // Contenedor de la fila de datos
+
   rowContainer: {
     flexDirection: 'row',
     borderBottomWidth: 1,
@@ -253,25 +250,25 @@ const styles = StyleSheet.create({
   noBottomBorder: {
     borderBottomWidth: 0,
   },
-  // Fondos alternados para las celdas
+
   rowDefaultBg: {
     backgroundColor: '#0b1326',
   },
   rowAlternateBg: {
-    backgroundColor: '#131b2e', // surface-container-low (cebreado)
+    backgroundColor: '#131b2e',
   },
   cell: {
     paddingHorizontal: 12,
     paddingVertical: 12,
     justifyContent: 'center',
   },
-  // Textos de celdas: fuente Inter, body-sm
+
   cellText: {
-    fontFamily: 'Inter',
-    fontSize: 12,
-    color: '#c4c6cf', // on-surface-variant
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
+    fontSize: TYPOGRAPHY.sizes.xs,
+    color: '#c4c6cf',
   },
-  // Alineaciones de texto
+
   textLeft: {
     textAlign: 'left',
   },
@@ -281,15 +278,16 @@ const styles = StyleSheet.create({
   textRight: {
     textAlign: 'right',
   },
-  // Estado vacío
+
   emptyState: {
     paddingVertical: 32,
     alignItems: 'center',
     justifyContent: 'center',
   },
   emptyText: {
-    fontFamily: 'Inter',
-    fontSize: 13,
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
+    fontSize: TYPOGRAPHY.sizes.xs,
     color: '#94a3b8',
   },
 });
+

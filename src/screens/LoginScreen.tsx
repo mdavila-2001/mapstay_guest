@@ -18,7 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNotification } from '../components/NotificationProvider';
 import { useAuth } from '../hooks/useAuth';
-import { COLORS, SPACING, RADIUS } from '../core/theme/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../core/theme/theme';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -39,7 +39,7 @@ function FloatingLabelInput({
 }: Readonly<FloatingLabelInputProps>) {
   const [isFocused, setIsFocused] = useState(false);
   const [secureText, setSecureText] = useState(isPassword);
-  
+
   const animatedIsFocused = useRef(new Animated.Value(value === '' ? 0 : 1)).current;
 
   useEffect(() => {
@@ -82,7 +82,7 @@ function FloatingLabelInput({
       >
         {label}
       </Animated.Text>
-      
+
       <TextInput
         style={[
           styles.textInput,
@@ -325,14 +325,14 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   welcomeTitle: {
-    fontFamily: 'Montserrat',
+    fontFamily: TYPOGRAPHY.fontFamily.bold,
     fontSize: 26,
     fontWeight: '700',
     color: COLORS.dark.textPrimary,
     textAlign: 'center',
   },
   welcomeSubtitle: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.medium,
     fontSize: 15,
     fontWeight: '500',
     color: COLORS.dark.textSecondary,
@@ -357,10 +357,11 @@ const styles = StyleSheet.create({
   floatingLabel: {
     position: 'absolute',
     left: 14,
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
   },
   textInput: {
     flex: 1,
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
     fontSize: 14,
     color: COLORS.dark.textPrimary,
     paddingTop: 16,
@@ -382,7 +383,7 @@ const styles = StyleSheet.create({
     marginVertical: SPACING.md,
   },
   helperText: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
     fontSize: 13,
     color: COLORS.dark.textSecondary,
   },
@@ -410,7 +411,7 @@ const styles = StyleSheet.create({
     }),
   },
   submitButtonText: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.semibold,
     fontSize: 15,
     fontWeight: '600',
     color: COLORS.dark.background,
@@ -421,7 +422,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   forgotPasswordText: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.medium,
     fontSize: 13,
     fontWeight: '500',
     color: '#dae2fd',

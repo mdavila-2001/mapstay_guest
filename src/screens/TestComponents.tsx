@@ -10,6 +10,7 @@ import { useNotification } from '../components/NotificationProvider';
 import { Header } from '../components/Header';
 import { Sidebar } from '../components/Sidebar';
 import { useAuth } from '../hooks/useAuth';
+import { TYPOGRAPHY } from '../core/theme/theme';
 
 interface BookingData {
     id: string;
@@ -46,7 +47,7 @@ const StarIcon = ({ color = '#fff' }: { color?: string }) => (
     <View style={[styles.starIcon, { backgroundColor: color }]} />
 );
 
-export default function TestComponents() {
+export default function TestComponents({ onNavigateToHome }: { onNavigateToHome?: () => void }) {
     const { showToast, showAlert } = useNotification();
     const { logout } = useAuth();
     const [textVal, setTextVal] = useState('');
@@ -62,7 +63,7 @@ export default function TestComponents() {
         setPressedRowText(`Fila presionada: ${item.guestName} - ${item.room} ($${item.total})`);
     };
 
-    const [currentRoute, setCurrentRoute] = useState<string>('home');
+    const [currentRoute, setCurrentRoute] = useState<string>('showcase');
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
     const sidebarAnim = React.useRef(new Animated.Value(0)).current;
 
@@ -102,11 +103,16 @@ export default function TestComponents() {
                     });
                 },
             });
+        } else if (screenName === 'home') {
+            closeSidebar();
+            if (onNavigateToHome) {
+                onNavigateToHome();
+            }
         } else {
             setCurrentRoute(screenName);
             closeSidebar();
             showToast({
-                message: `Navegando a: ${screenName === 'home' ? 'Inicio' : screenName === 'bookings' ? 'Mis Reservas' : 'Modo Host'}`,
+                message: `Navegando a: ${screenName === 'bookings' ? 'Mis Reservas' : 'Modo Host'}`,
                 type: 'info',
             });
         }
@@ -160,7 +166,6 @@ export default function TestComponents() {
       },
     ];
 
-    // Columns config for property stats (horizontal scroll based with fixed widths)
     const propertyColumns: ColumnConfig<PropertyLog>[] = [
       {
         key: 'propertyName',
@@ -229,7 +234,6 @@ export default function TestComponents() {
                         <Text style={styles.subtitle}>Component Showcase (Modo Oscuro)</Text>
                     </View>
 
-                    {/* SECTION: MODALS SHOWCASE */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>1. Ventanas Modulares (CustomModal)</Text>
 
@@ -252,11 +256,9 @@ export default function TestComponents() {
                         </View>
                     </View>
 
-                    {/* SECTION: INPUTS SYSTEM SHOWCASE */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>2. Campos de Entrada (Inputs SOLID)</Text>
 
-                        {/* A. TEXT INPUT */}
                         <View style={styles.showcaseItem}>
                             <Text style={styles.itemLabel}>Text Input (Foco & Outline Animados)</Text>
                             <Input
@@ -270,7 +272,6 @@ export default function TestComponents() {
                             <Text style={styles.valueFeedback}>Valor: {textVal || 'Vacío'}</Text>
                         </View>
 
-                        {/* B. NUMBER INPUT */}
                         <View style={styles.showcaseItem}>
                             <Text style={styles.itemLabel}>Number Input (Teclado Numérico)</Text>
                             <Input
@@ -284,7 +285,6 @@ export default function TestComponents() {
                             <Text style={styles.valueFeedback}>Valor: {numberVal || 'Vacío'}</Text>
                         </View>
 
-                        {/* C. PASSWORD INPUT */}
                         <View style={styles.showcaseItem}>
                             <Text style={styles.itemLabel}>Password Input (Secure Toggle)</Text>
                             <Input
@@ -298,7 +298,6 @@ export default function TestComponents() {
                             <Text style={styles.valueFeedback}>Valor: {passwordVal ? '••••••••' : 'Vacío'}</Text>
                         </View>
 
-                        {/* D. DATE INPUT */}
                         <View style={styles.showcaseItem}>
                             <Text style={styles.itemLabel}>Date Input (DatePicker Nativo)</Text>
                             <Input
@@ -314,7 +313,6 @@ export default function TestComponents() {
                             </Text>
                         </View>
 
-                        {/* E. SELECT INPUT */}
                         <View style={styles.showcaseItem}>
                             <Text style={styles.itemLabel}>Select Input (Custom Bottom Sheet)</Text>
                             <Input
@@ -329,7 +327,6 @@ export default function TestComponents() {
                             <Text style={styles.valueFeedback}>Valor: {selectVal || 'Ninguno'}</Text>
                         </View>
 
-                        {/* F. ERROR STATE */}
                         <View style={styles.showcaseItem}>
                             <Text style={styles.itemLabel}>Input con Estado de Error</Text>
                             <Input
@@ -350,7 +347,6 @@ export default function TestComponents() {
                         </View>
                     </View>
 
-                    {/* SECTION: BUTTON SHOWCASE */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>3. Variantes de Botón (Altura 48px)</Text>
 
@@ -375,7 +371,6 @@ export default function TestComponents() {
                         </View>
                     </View>
 
-                    {/* SECTION: BUTTON STATES */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>4. Estados del Botón (Loading / Disabled)</Text>
 
@@ -400,7 +395,6 @@ export default function TestComponents() {
                         </View>
                     </View>
 
-                    {/* SECTION: BUTTON ROUNDNESS */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>5. Radios de Curvatura del Botón (Roundness)</Text>
 
@@ -427,7 +421,6 @@ export default function TestComponents() {
                         </View>
                     </View>
 
-                    {/* SECTION: BUTTON SIZES */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>6. Tamaños de Botón & Iconos</Text>
 
@@ -460,10 +453,9 @@ export default function TestComponents() {
                         </View>
                     </View>
 
-                    {/* SECTION: CUSTOMTABLE SHOWCASE */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>7. Tabla Modular (CustomTable - Flex Layout)</Text>
-                        
+
                         <View style={styles.showcaseItem}>
                             <Text style={styles.itemLabel}>Tabla de Reservas (Zebra Striped & Interactive Row Press)</Text>
                             <CustomTable
@@ -481,7 +473,7 @@ export default function TestComponents() {
 
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>8. Tabla Responsiva (CustomTable - Horizontal Scroll)</Text>
-                        
+
                         <View style={styles.showcaseItem}>
                             <Text style={styles.itemLabel}>Estadísticas de Propiedades (Anchos Fijos, Scrollable)</Text>
                             <CustomTable
@@ -494,11 +486,9 @@ export default function TestComponents() {
                         </View>
                     </View>
 
-                    {/* SECTION: GLOBAL NOTIFICATIONS & ALERTS SHOWCASE */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>9. Notificaciones y Alertas Globales (`useNotification`)</Text>
 
-                        {/* A. TOASTS */}
                         <Text style={styles.itemLabel}>Notificaciones Efímeras (Toasts)</Text>
                         <View style={styles.row}>
                             <Button
@@ -542,7 +532,6 @@ export default function TestComponents() {
                             />
                         </View>
 
-                        {/* B. CONFIRMATION ALERTS */}
                         <Text style={[styles.itemLabel, { marginTop: 16 }]}>Diálogos de Confirmación Críticos (Alertas)</Text>
                         <View style={styles.row}>
                             <Button
@@ -582,7 +571,6 @@ export default function TestComponents() {
                         </ScrollView>
             </View>
 
-            {/* DIALOG VARIANT SHOWCASE (FADE) */}
             <CustomModal
                 visible={dialogVisible}
                 onClose={() => setDialogVisible(false)}
@@ -608,7 +596,6 @@ export default function TestComponents() {
                 </View>
             </CustomModal>
 
-            {/* BOTTOM SHEET VARIANT SHOWCASE (SLIDE) */}
             <CustomModal
                 visible={sheetVisible}
                 onClose={() => setSheetVisible(false)}
@@ -638,7 +625,6 @@ export default function TestComponents() {
                 />
             </CustomModal>
 
-            {/* OVERLAY DE BARRA LATERAL (SIDEBAR DRAWER) */}
             {sidebarOpen && (
                 <View style={StyleSheet.absoluteFill}>
                     <Pressable
@@ -742,9 +728,9 @@ const styles = StyleSheet.create({
         height: 10,
         borderRadius: 5,
     },
-    // Modal text & layout styles
+
     modalText: {
-        fontFamily: 'Inter',
+        fontFamily: TYPOGRAPHY.fontFamily.regular,
         fontSize: 14,
         color: '#dae2fd',
         lineHeight: 20,
@@ -784,30 +770,30 @@ const styles = StyleSheet.create({
         borderColor: '#f87171',
     },
     badgeText: {
-        fontFamily: 'Inter',
+        fontFamily: TYPOGRAPHY.fontFamily.semibold,
         fontSize: 11,
         fontWeight: '600',
         color: '#dae2fd',
     },
     priceText: {
-        fontFamily: 'Inter',
+        fontFamily: TYPOGRAPHY.fontFamily.bold,
         fontSize: 13,
         fontWeight: '700',
         color: '#59dad1',
     },
     ratingText: {
-        fontFamily: 'Inter',
+        fontFamily: TYPOGRAPHY.fontFamily.regular,
         fontSize: 12,
         color: '#dae2fd',
     },
     revenueText: {
-        fontFamily: 'Inter',
+        fontFamily: TYPOGRAPHY.fontFamily.semibold,
         fontSize: 13,
         fontWeight: '600',
         color: '#59dad1',
     },
     pressedTextFeedback: {
-        fontFamily: 'Inter',
+        fontFamily: TYPOGRAPHY.fontFamily.regular,
         fontSize: 12,
         color: '#38BDF8',
         marginTop: 8,

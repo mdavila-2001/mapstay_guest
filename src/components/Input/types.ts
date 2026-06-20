@@ -1,4 +1,4 @@
-import { TextInputProps } from 'react-native';
+import { TextInputProps, StyleProp, ViewStyle } from 'react-native';
 
 export type InputVariant = 'text' | 'number' | 'password' | 'date' | 'select';
 
@@ -15,6 +15,8 @@ export interface InputProps extends Omit<TextInputProps, 'value' | 'onChangeText
   options?: SelectOption[];
   value?: any;
   onValueChange?: (value: any) => void;
+  containerStyle?: StyleProp<ViewStyle>;
+  inputContainerStyle?: StyleProp<ViewStyle>;
 }
 
 export interface BaseInputProps {
@@ -25,4 +27,6 @@ export interface BaseInputProps {
   children: React.ReactNode;
   rightElement?: React.ReactNode;
   onPressContainer?: () => void;
+  containerStyle?: StyleProp<ViewStyle>;
+  inputContainerStyle?: StyleProp<ViewStyle>;
 }

@@ -10,19 +10,18 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import { TYPOGRAPHY } from '../core/theme/theme';
 
-// Color Palette based on MapStay Design System (Dark Mode Preferred)
 const COLORS = {
-  primaryBg: '#59dad1',       // Sea Green / Teal
-  primaryText: '#003734',     // On-Secondary (Dark Teal)
-  secondaryBg: '#001f3f',     // Primary Container (Dark Blue)
-  secondaryText: '#afc8f0',   // Primary (Light Blue)
-  outlineBorder: '#8e9198',   // Outline Grey
-  outlineText: '#dae2fd',     // On-Surface (Light Off-white)
-  textVariantColor: '#59dad1', // Teal Text
+  primaryBg: '#59dad1',
+  primaryText: '#003734',
+  secondaryBg: '#001f3f',
+  secondaryText: '#afc8f0',
+  outlineBorder: '#8e9198',
+  outlineText: '#dae2fd',
+  textVariantColor: '#59dad1',
 };
 
-// Map of variant text colors to be used dynamically for ActivityIndicator and icons
 const TEXT_COLORS = {
   primary: COLORS.primaryText,
   secondary: COLORS.secondaryText,
@@ -31,48 +30,21 @@ const TEXT_COLORS = {
 };
 
 export interface ButtonProps extends TouchableOpacityProps {
-  /**
-   * The text to display inside the button.
-   */
+
   text?: string;
 
-  /**
-   * The visual style variant of the button.
-   * @default 'primary'
-   */
   variant?: 'primary' | 'secondary' | 'outline' | 'text';
 
-  /**
-   * The explicit border radius configuration.
-   * @default 'md'
-   */
   roundness?: 'sm' | 'md' | 'lg' | 'full';
 
-  /**
-   * The size of the button which defines height and typography.
-   * @default 'md'
-   */
   size?: 'sm' | 'md';
 
-  /**
-   * Shows a loading spinner and disables interactions.
-   * @default false
-   */
   loading?: boolean;
 
-  /**
-   * Optional icon component to display on the left side of the text.
-   */
   icon?: React.ReactNode;
 
-  /**
-   * Optional custom style overrides for the button container.
-   */
   style?: StyleProp<ViewStyle>;
 
-  /**
-   * Optional custom style overrides for the button text.
-   */
   textStyle?: StyleProp<TextStyle>;
 }
 
@@ -91,7 +63,6 @@ export const Button: React.FC<ButtonProps> = ({
   const isButtonDisabled = disabled || loading;
   const textColor = TEXT_COLORS[variant];
 
-  // Resolve custom roundness styles
   const getRoundnessStyle = () => {
     switch (roundness) {
       case 'sm':
@@ -106,12 +77,10 @@ export const Button: React.FC<ButtonProps> = ({
     }
   };
 
-  // Resolve custom size styles
   const getSizeStyle = () => {
     return size === 'sm' ? styles.sizeSm : styles.sizeMd;
   };
 
-  // Resolve text size styles
   const getTextSizeStyle = () => {
     return size === 'sm' ? styles.labelSm : styles.labelMd;
   };
@@ -156,7 +125,7 @@ export const Button: React.FC<ButtonProps> = ({
 };
 
 const styles = StyleSheet.create({
-  // Base button container layout
+
   baseButton: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -164,7 +133,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderStyle: 'solid',
   },
-  // Variant styles
+
   primary: {
     backgroundColor: COLORS.primaryBg,
   },
@@ -179,9 +148,9 @@ const styles = StyleSheet.create({
   text: {
     backgroundColor: 'transparent',
   },
-  // Size styles
+
   md: {
-    // Height specification: Minimum 48px to guarantee touch target
+
     minHeight: 48,
     paddingVertical: 12,
     paddingHorizontal: 24,
@@ -196,7 +165,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
-  // Roundness styles
+
   roundnessSm: {
     borderRadius: 4,
   },
@@ -209,35 +178,36 @@ const styles = StyleSheet.create({
   roundnessFull: {
     borderRadius: 9999,
   },
-  // Disabled state
+
   disabled: {
     opacity: 0.5,
   },
-  // Content container
+
   contentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // Icon wrapper
+
   iconWrapper: {
     marginRight: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // Typography base and sizes
+
   baseText: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.medium,
     textAlign: 'center',
   },
   labelMd: {
-    fontSize: 14,
+    fontSize: TYPOGRAPHY.sizes.sm,
     fontWeight: '500',
     lineHeight: 16,
   },
   labelSm: {
-    fontSize: 12,
+    fontSize: TYPOGRAPHY.sizes.xs,
     fontWeight: '500',
     lineHeight: 14,
   },
 });
+

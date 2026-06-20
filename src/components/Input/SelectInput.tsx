@@ -31,7 +31,6 @@ export const SelectInput: React.FC<InputProps> = ({
     setModalVisible(false);
   };
 
-  // Find currently selected label
   const selectedOption = options.find((opt) => opt.value === value);
   const displayLabel = selectedOption ? selectedOption.label : '';
 
@@ -57,7 +56,6 @@ export const SelectInput: React.FC<InputProps> = ({
         </Text>
       </BaseInput>
 
-      {/* Modal-based Bottom Sheet */}
       <Modal
         transparent
         animationType="slide"
@@ -66,13 +64,12 @@ export const SelectInput: React.FC<InputProps> = ({
       >
         <Pressable style={styles.modalOverlay} onPress={handleCloseModal}>
           <Pressable style={styles.bottomSheetContainer}>
-            {/* Bottom Sheet Header */}
+
             <View style={styles.bottomSheetHeader}>
               <View style={styles.dragHandle} />
               <Text style={styles.bottomSheetTitle}>{label || 'Seleccionar opción'}</Text>
             </View>
 
-            {/* List of Options */}
             <ScrollView bounces={false}>
               {options.map((option, index) => {
                 const isSelected = option.value === value;

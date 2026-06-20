@@ -13,6 +13,9 @@ export const TextInput: React.FC<InputProps> = ({
   onValueChange,
   onFocus,
   onBlur,
+  style,
+  containerStyle,
+  inputContainerStyle,
   ...rest
 }) => {
   const [focused, setFocused] = useState(false);
@@ -39,9 +42,11 @@ export const TextInput: React.FC<InputProps> = ({
       error={error}
       focused={focused}
       iconName={iconName}
+      containerStyle={containerStyle}
+      inputContainerStyle={inputContainerStyle}
     >
       <RNTextInput
-        style={styles.inputControl}
+        style={[styles.inputControl, style]}
         placeholderTextColor={COLORS.placeholderColor}
         value={value ?? ''}
         onChangeText={handleChangeText}

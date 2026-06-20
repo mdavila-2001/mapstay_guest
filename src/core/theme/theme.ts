@@ -23,6 +23,12 @@ export const COLORS = {
     }
 };
 
+export const colors = {
+    slate900: '#0F172A',
+    slate800: '#1E293B',
+    teal400: '#2DD4BF',
+};
+
 export const SPACING = {
     xs: 4,
     sm: 8,
@@ -39,3 +45,23 @@ export const RADIUS = {
     xl: 24,
     round: 9999,
 };
+
+export const TYPOGRAPHY = {
+    fontFamily: {
+        light: 'Poppins-Light',
+        regular: 'Poppins-Regular',
+        medium: 'Poppins-Medium',
+        semibold: 'Poppins-SemiBold',
+        bold: 'Poppins-Bold',
+    },
+    sizes: {
+        xs: 12,
+        sm: 14,
+        md: 16,
+        lg: 18,
+        xl: 20,
+        xxl: 24,
+        xxxl: 32,
+    },
+};
+

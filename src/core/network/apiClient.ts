@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const BASE_URL = process.env.PUBLIC_API_URL;
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 if (!BASE_URL) {
-    console.warn('⚠️ Advertencia: PUBLIC_API_URL no está definida en el archivo .env');
+    console.warn('Advertencia: EXPO_PUBLIC_API_URL no está definida en el archivo .env');
 }
 
 export const apiClient = axios.create({
@@ -17,9 +17,6 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   async (config) => {
-    // Aquí podrías recuperar un token de SecureStore e inyectarlo si fuera necesario:
-    // const token = await SecureStore.getItemAsync('user_token');
-    // if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => {

@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNotification } from '../components/NotificationProvider';
 import { useAuth } from '../hooks/useAuth';
-import { COLORS, SPACING, RADIUS } from '../core/theme/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../core/theme/theme';
 
 export interface RegisterScreenProps {
   readonly onPressMenu?: () => void;
@@ -269,14 +269,14 @@ const styles = StyleSheet.create({
     borderColor: COLORS.dark.border,
   },
   brandTitle: {
-    fontFamily: 'Montserrat',
+    fontFamily: TYPOGRAPHY.fontFamily.bold,
     fontSize: 28,
     fontWeight: '700',
     color: COLORS.dark.textPrimary,
     textAlign: 'center',
   },
   brandSubtitle: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
     fontSize: 14,
     color: COLORS.dark.textSecondary,
     textAlign: 'center',
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   inputLabel: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.medium,
     fontSize: 13,
     fontWeight: '500',
     color: COLORS.dark.textSecondary,
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
     fontSize: 14,
     color: COLORS.dark.textPrimary,
     height: '100%',
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   submitButtonText: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.bold,
     fontSize: 15,
     fontWeight: '700',
     color: COLORS.dark.background,
@@ -365,13 +365,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loginText: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
     fontSize: 14,
     color: COLORS.dark.textSecondary,
   },
   loginLink: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.semibold,
     fontWeight: '600',
     color: COLORS.dark.accent,
   },
 });
+

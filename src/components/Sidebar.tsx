@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { TYPOGRAPHY } from '../core/theme/theme';
 
 interface SidebarItemProps {
   readonly title: string;
@@ -16,7 +17,6 @@ interface SidebarItemProps {
   readonly onPress: () => void;
 }
 
-// Sub-componente interno limpio para evitar redundancia de estilos en el StyleSheet
 function SidebarItem({
   title,
   iconName,
@@ -66,15 +66,13 @@ export function Sidebar({
 
   return (
     <View style={[styles.sidebarContainer, containerPaddingTop]}>
-      {/* Header del Sidebar: Logo y bienvenida */}
+
       <View style={styles.headerArea}>
         <View style={styles.brandingRow}>
-          <Ionicons name="trail-sign" size={26} color="#59dad1" style={styles.logoIcon} />
           <Text style={styles.brandingText}>MapStay</Text>
         </View>
         <Text style={styles.welcomeText}>Huésped</Text>
-        
-        {/* Botón de cierre interno (flecha de colapso) */}
+
         <TouchableOpacity
           onPress={onClose}
           style={styles.closeArrowButton}
@@ -86,13 +84,11 @@ export function Sidebar({
         </TouchableOpacity>
       </View>
 
-      {/* Divisor superior sutil */}
       <View style={styles.divider} />
 
-      {/* Lista de navegación */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.sectionHeading}>Navegación</Text>
-        
+
         <SidebarItem
           title="Inicio / Buscar Alojamientos"
           iconName={currentRoute === 'home' ? 'home' : 'home-outline'}
@@ -107,18 +103,14 @@ export function Sidebar({
           onPress={() => onNavigate('bookings')}
         />
 
-        <View style={styles.sectionSpace} />
-        <Text style={styles.sectionHeading}>Modo Perfil</Text>
-
         <SidebarItem
-          title="Cambiar de Cuenta / Modo Host"
-          iconName="swap-horizontal-outline"
-          isActive={currentRoute === 'mode-host'}
-          onPress={() => onNavigate('mode-host')}
+          title="Showcase de Componentes"
+          iconName="color-palette-outline"
+          isActive={currentRoute === 'showcase'}
+          onPress={() => onNavigate('showcase')}
         />
       </ScrollView>
 
-      {/* Sección de Pie (Footer): Botón de Cerrar Sesión */}
       <View style={[styles.footerArea, footerPaddingBottom]}>
         <View style={styles.divider} />
         <TouchableOpacity
@@ -137,13 +129,13 @@ export function Sidebar({
 }
 
 const styles = StyleSheet.create({
-  // Contenedor principal de la barra lateral
+
   sidebarContainer: {
     flex: 1,
-    backgroundColor: '#131b2e', // surface-container-low
+    backgroundColor: '#131b2e',
     width: '100%',
   },
-  // Área superior de branding y bienvenida
+
   headerArea: {
     paddingHorizontal: 20,
     paddingVertical: 18,
@@ -158,17 +150,16 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   brandingText: {
-    fontFamily: 'Montserrat',
-    fontSize: 22,
+    fontFamily: TYPOGRAPHY.fontFamily.bold,
+    fontSize: TYPOGRAPHY.sizes.xxl,
     fontWeight: '700',
-    color: '#dae2fd', // on-surface
+    color: '#dae2fd',
   },
   welcomeText: {
-    fontFamily: 'Montserrat',
-    fontSize: 14,
+    fontFamily: TYPOGRAPHY.fontFamily.semibold,
+    fontSize: TYPOGRAPHY.sizes.sm,
     fontWeight: '600',
-    color: '#59dad1', // secondary / Sea Green
-    marginLeft: 34, // Alineado debajo de MapStay
+    color: '#59dad1',
   },
   closeArrowButton: {
     position: 'absolute',
@@ -181,22 +172,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  // Separador de secciones
+
   divider: {
     height: 1,
-    backgroundColor: '#334155', // slate-700
+    backgroundColor: '#334155',
     width: '100%',
   },
-  // Contenido con scroll
+
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 16,
   },
   sectionHeading: {
-    fontFamily: 'Montserrat',
-    fontSize: 12,
+    fontFamily: TYPOGRAPHY.fontFamily.semibold,
+    fontSize: TYPOGRAPHY.sizes.xs,
     fontWeight: '600',
-    color: '#8e9198', // outline
+    color: '#8e9198',
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: 8,
@@ -206,17 +197,17 @@ const styles = StyleSheet.create({
   sectionSpace: {
     height: 16,
   },
-  // Fila de la opción de navegación
+
   itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 14,
-    borderRadius: 12, // rounded.md
+    borderRadius: 12,
     marginVertical: 4,
   },
   itemActiveBg: {
-    backgroundColor: '#222a3d', // surface-container-high
+    backgroundColor: '#222a3d',
   },
   itemInactiveBg: {
     backgroundColor: 'transparent',
@@ -224,13 +215,13 @@ const styles = StyleSheet.create({
   itemIcon: {
     marginRight: 12,
   },
-  // Botones de navegación (Inter body-md)
+
   itemText: {
-    fontFamily: 'Inter',
-    fontSize: 14,
+    fontFamily: TYPOGRAPHY.fontFamily.medium,
+    fontSize: TYPOGRAPHY.sizes.sm,
     fontWeight: '500',
   },
-  // Pie de página
+
   footerArea: {
     paddingHorizontal: 16,
   },
@@ -241,7 +232,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#43474e', // outline-variant
+    borderColor: '#43474e',
     backgroundColor: 'transparent',
     marginTop: 16,
     justifyContent: 'center',
@@ -250,9 +241,10 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   logoutText: {
-    fontFamily: 'Inter',
-    fontSize: 14,
+    fontFamily: TYPOGRAPHY.fontFamily.semibold,
+    fontSize: TYPOGRAPHY.sizes.sm,
     fontWeight: '600',
-    color: '#ffb4ab', // error soft
+    color: '#ffb4ab',
   },
 });
+

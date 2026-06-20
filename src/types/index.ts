@@ -15,3 +15,5 @@ export interface AuthResponse {
     telefono: string;
     token?: string;
 }
+
+export * from './property';

@@ -11,6 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from './Button';
+import { TYPOGRAPHY } from '../core/theme/theme';
 
 export type NotificationType = 'success' | 'warning' | 'info' | 'error';
 
@@ -62,7 +63,7 @@ export function NotificationProvider({ children }: Readonly<NotificationProvider
   }, [toastAnim]);
 
   const showToast = useCallback((options: ToastOptions) => {
-    // Limpiar temporizadores previos
+
     if (toastTimeoutRef.current) {
       clearTimeout(toastTimeoutRef.current);
     }
@@ -97,7 +98,6 @@ export function NotificationProvider({ children }: Readonly<NotificationProvider
     setAlert(null);
   }, []);
 
-  // Limpiar temporizadores al desmontar el componente
   useEffect(() => {
     return () => {
       if (toastTimeoutRef.current) {
@@ -106,7 +106,6 @@ export function NotificationProvider({ children }: Readonly<NotificationProvider
     };
   }, []);
 
-  // Gestores de confirmación / cancelación para la Alerta
   const handleAlertConfirm = () => {
     if (alert) {
       alert.onConfirm();
@@ -124,14 +123,14 @@ export function NotificationProvider({ children }: Readonly<NotificationProvider
   const getSemanticColor = (type: NotificationType) => {
     switch (type) {
       case 'success':
-        return '#20B2AA'; // success-green accent
+        return '#20B2AA';
       case 'warning':
-        return '#F59E0B'; // warning amber
+        return '#F59E0B';
       case 'error':
-        return '#EF4444'; // error-red
+        return '#EF4444';
       case 'info':
       default:
-        return '#7bd0ff'; // info blue
+        return '#7bd0ff';
     }
   };
 
@@ -142,14 +141,13 @@ export function NotificationProvider({ children }: Readonly<NotificationProvider
       case 'warning':
         return 'warning';
       case 'error':
-        return 'skull'; // Calavera logo
+        return 'skull';
       case 'info':
       default:
         return 'information-circle';
     }
   };
 
-  // Interpolación de animaciones para Toasts (entrada suave desde el tope de la pantalla)
   const translateY = toastAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [-60, 0],
@@ -163,7 +161,6 @@ export function NotificationProvider({ children }: Readonly<NotificationProvider
   const activeColor = toast ? getSemanticColor(toast.type) : '#7bd0ff';
   const activeIconName = toast ? getSemanticIcon(toast.type) : 'information-circle';
 
-  // Memoizar el valor del contexto para prevenir renderizados innecesarios en los consumidores
   const contextValue = useMemo(() => ({
     showToast,
     showAlert,
@@ -175,7 +172,6 @@ export function NotificationProvider({ children }: Readonly<NotificationProvider
     <NotificationContext.Provider value={contextValue}>
       {children}
 
-      {/* Overlay absoluto de Toasts (no bloqueante gracias a pointerEvents="box-none") */}
       <View style={styles.toastOverlayContainer} pointerEvents="box-none">
         {toast && (
           <Animated.View
@@ -200,7 +196,6 @@ export function NotificationProvider({ children }: Readonly<NotificationProvider
         )}
       </View>
 
-      {/* Overlay de Alertas críticas (modal centrado bloqueante) */}
       <Modal
         transparent
         visible={alert !== null}
@@ -212,7 +207,7 @@ export function NotificationProvider({ children }: Readonly<NotificationProvider
           <Pressable style={StyleSheet.absoluteFill} onPress={handleAlertCancel} />
           {alert && (
             <View style={styles.alertCard}>
-              {/* Icono semántico de cabecera */}
+
               <View style={styles.alertHeaderContainer}>
                 <Ionicons
                   name={getSemanticIcon(alert.type ?? 'info')}
@@ -221,11 +216,9 @@ export function NotificationProvider({ children }: Readonly<NotificationProvider
                 />
               </View>
 
-              {/* Título y Mensaje descriptivo */}
               <Text style={styles.alertTitle}>{alert.title}</Text>
               <Text style={styles.alertMessage}>{alert.message}</Text>
 
-              {/* Fila de Botones de Acción */}
               <View style={styles.alertActionsRow}>
                 {alert.onCancel && (
                   <Button
@@ -263,7 +256,7 @@ export function useNotification() {
 }
 
 const styles = StyleSheet.create({
-  // Contenedor Toast absoluto
+
   toastOverlayContainer: {
     position: 'absolute',
     top: 0,
@@ -272,7 +265,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 9999,
   },
-  // Tarjeta Toast (#222a3d, rounded 12px, outline 1px #43474e)
+
   toastCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -301,7 +294,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   toastText: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
     fontSize: 13,
     color: '#dae2fd',
     flex: 1,
@@ -312,7 +305,6 @@ const styles = StyleSheet.create({
     padding: 2,
   },
 
-  // Contenedor Modal de Alerta
   alertOverlay: {
     flex: 1,
     backgroundColor: 'rgba(6, 14, 32, 0.75)',
@@ -320,7 +312,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  // Tarjeta Alerta (#222a3d, rounded 12px, outline 1px #43474e)
+
   alertCard: {
     backgroundColor: '#222a3d',
     borderWidth: 1,
@@ -346,7 +338,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   alertTitle: {
-    fontFamily: 'Montserrat',
+    fontFamily: TYPOGRAPHY.fontFamily.semibold,
     fontSize: 17,
     fontWeight: '600',
     color: '#dae2fd',
@@ -354,7 +346,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   alertMessage: {
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
     fontSize: 13,
     color: '#c4c6cf',
     textAlign: 'center',
@@ -378,3 +370,4 @@ const styles = StyleSheet.create({
     color: '#EF4444',
   },
 });
+

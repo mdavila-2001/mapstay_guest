@@ -38,7 +38,6 @@ export const PasswordInput: React.FC<InputProps> = ({
     setSecure((prev) => !prev);
   };
 
-  // Right-aligned eye toggle button
   const rightElement = (
     <Pressable onPress={toggleSecureEntry} hitSlop={12}>
       <Ionicons

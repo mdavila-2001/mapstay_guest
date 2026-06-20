@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BaseInput } from './BaseInput';
 import { InputProps } from './types';
 import { styles, COLORS } from './styles';
+import { TYPOGRAPHY } from '../../core/theme/theme';
 
 export const DateInput: React.FC<InputProps> = ({
   label,
@@ -82,7 +83,6 @@ export const DateInput: React.FC<InputProps> = ({
         </Text>
       </BaseInput>
 
-      {/* Cross-Platform Native Date Picker */}
       {showPicker && (
         Platform.OS === 'android' ? (
           <DateTimePicker
@@ -93,7 +93,7 @@ export const DateInput: React.FC<InputProps> = ({
             onDismiss={handleClosePicker}
           />
         ) : (
-          /* iOS Dialog Wrapper Modal */
+
           <Modal
             transparent
             animationType="slide"
@@ -102,7 +102,7 @@ export const DateInput: React.FC<InputProps> = ({
           >
             <Pressable style={styles.modalOverlay} onPress={handleClosePicker}>
               <Pressable style={iosStyles.iosPickerContainer}>
-                {/* Actions Bar */}
+
                 <View style={iosStyles.actionsBar}>
                   <Pressable onPress={handleClosePicker} style={iosStyles.actionBtn}>
                     <Text style={iosStyles.cancelText}>Cancelar</Text>
@@ -112,7 +112,7 @@ export const DateInput: React.FC<InputProps> = ({
                     <Text style={iosStyles.confirmText}>Confirmar</Text>
                   </Pressable>
                 </View>
-                {/* Native Picker */}
+
                 <DateTimePicker
                   value={tempDate}
                   mode="date"
@@ -154,14 +154,15 @@ const iosStyles = StyleSheet.create({
   },
   cancelText: {
     color: COLORS.errorColor,
-    fontSize: 14,
+    fontSize: TYPOGRAPHY.sizes.sm,
     fontWeight: '500',
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.medium,
   },
   confirmText: {
     color: COLORS.borderFocus,
-    fontSize: 14,
+    fontSize: TYPOGRAPHY.sizes.sm,
     fontWeight: '600',
-    fontFamily: 'Inter',
+    fontFamily: TYPOGRAPHY.fontFamily.semibold,
   },
 });
+

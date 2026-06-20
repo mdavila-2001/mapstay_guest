@@ -23,7 +23,6 @@ export function AuthProvider({ children }: Readonly<AuthProviderProps>) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  // Restaurar sesión persistida en AsyncStorage al iniciar la aplicación
   useEffect(() => {
     const restoreSession = async () => {
       try {
@@ -41,7 +40,6 @@ export function AuthProvider({ children }: Readonly<AuthProviderProps>) {
     restoreSession();
   }, []);
 
-  // Función de inicio de sesión
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
     setIsLoading(true);
     setAuthError(null);
@@ -59,7 +57,6 @@ export function AuthProvider({ children }: Readonly<AuthProviderProps>) {
     }
   };
 
-  // Función de registro de usuario
   const register = async (payload: RegisterPayload): Promise<boolean> => {
     setIsLoading(true);
     setAuthError(null);
@@ -75,7 +72,6 @@ export function AuthProvider({ children }: Readonly<AuthProviderProps>) {
     }
   };
 
-  // Función de cierre de sesión
   const logout = async (): Promise<void> => {
     setIsLoading(true);
     try {

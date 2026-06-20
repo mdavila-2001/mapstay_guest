@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { TYPOGRAPHY } from '../core/theme/theme';
 
 export interface HeaderProps {
   readonly title: string;
@@ -28,7 +29,7 @@ export function Header({
   return (
     <View style={[styles.headerContainer, containerPaddingTop]}>
       <View style={styles.headerContent}>
-        {/* Left Side: Hamburger Menu Button */}
+
         <TouchableOpacity
           onPress={onPressMenu}
           style={styles.actionButton}
@@ -39,14 +40,12 @@ export function Header({
           <Ionicons name="menu" size={24} color="#dae2fd" />
         </TouchableOpacity>
 
-        {/* Center: Centered Title Text */}
         <View style={styles.titleContainer}>
           <Text numberOfLines={1} style={styles.titleText}>
             {title}
           </Text>
         </View>
 
-        {/* Right Side: Log Out Button */}
         <TouchableOpacity
           onPress={onPressLogout}
           style={styles.actionButton}
@@ -62,13 +61,13 @@ export function Header({
 }
 
 const styles = StyleSheet.create({
-  // Contenedor principal con elevación de color y borde divisor inferior
+
   headerContainer: {
-    backgroundColor: '#171f33', // surface-container
+    backgroundColor: '#171f33',
     borderBottomWidth: 1,
-    borderBottomColor: '#334155', // slate-700 / outline-variant
+    borderBottomColor: '#334155',
   },
-  // Contenedor base de contenido para centrado y alineación simétrica
+
   headerContent: {
     height: 56,
     flexDirection: 'row',
@@ -76,26 +75,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 8,
   },
-  // Botones laterales simétricos con ancho fijo para garantizar centrado perfecto
+
   actionButton: {
     width: 48,
     height: 48,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  // Contenedor del título con espacio flexible
+
   titleContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 8,
   },
-  // Estilo de tipografía Montserrat h3
+
   titleText: {
-    fontFamily: 'Montserrat',
-    fontSize: 20,
+    fontFamily: TYPOGRAPHY.fontFamily.semibold,
+    fontSize: TYPOGRAPHY.sizes.xl,
     fontWeight: '600',
-    color: '#dae2fd', // on-surface
+    color: '#dae2fd',
     textAlign: 'center',
   },
 });
+

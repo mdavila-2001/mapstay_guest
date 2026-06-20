@@ -11,39 +11,20 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { TYPOGRAPHY } from '../core/theme/theme';
 
 export interface CustomModalProps {
-  /**
-   * Controlled visibility state.
-   */
+
   visible: boolean;
 
-  /**
-   * Callback triggered when the modal requests closure (backdrop click, close button, or hardware back button).
-   */
   onClose: () => void;
 
-  /**
-   * Optional header title text.
-   */
   title?: string;
 
-  /**
-   * Presentation variant type.
-   * - `'fade'`: Centered Dialog overlay (default).
-   * - `'slide'`: Bottom Sheet overlay.
-   * @default 'fade'
-   */
   type?: 'slide' | 'fade';
 
-  /**
-   * Content inside the modal container.
-   */
   children: React.ReactNode;
 
-  /**
-   * Optional style overrides for the modal content card container.
-   */
   containerStyle?: StyleProp<ViewStyle>;
 }
 
@@ -66,11 +47,10 @@ export const CustomModal: React.FC<CustomModalProps> = ({
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      {/* Absolute Backdrop overlay */}
+
       <View style={styles.overlay}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
 
-        {/* Modal card container */}
         <View
           style={[
             isBottomSheet ? styles.bottomSheet : styles.dialog,
@@ -78,7 +58,7 @@ export const CustomModal: React.FC<CustomModalProps> = ({
             containerStyle,
           ]}
         >
-          {/* Header Row */}
+
           <View style={styles.headerRow}>
             {title ? (
               <Text numberOfLines={1} style={styles.headerTitle}>
@@ -88,7 +68,6 @@ export const CustomModal: React.FC<CustomModalProps> = ({
               <View style={styles.flexSpacer} />
             )}
 
-            {/* Close Icon Button */}
             <Pressable
               onPress={onClose}
               style={styles.closeBtn}
@@ -100,10 +79,8 @@ export const CustomModal: React.FC<CustomModalProps> = ({
             </Pressable>
           </View>
 
-          {/* Thin slate divider line */}
           <View style={styles.divider} />
 
-          {/* Scrollable/Plain Content container */}
           <View style={styles.contentWrapper}>{children}</View>
         </View>
       </View>
@@ -112,7 +89,7 @@ export const CustomModal: React.FC<CustomModalProps> = ({
 };
 
 const styles = StyleSheet.create({
-  // Overlay backdrop based on surface-container-lowest opacity spec
+
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(6, 14, 32, 0.7)',
@@ -120,14 +97,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  // Centered Dialog Variant Layout (surface-container)
   dialog: {
     width: '88%',
     maxWidth: 400,
     backgroundColor: '#171f33',
-    borderRadius: 12, // rounded.md
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#334155', // slate-700
+    borderColor: '#334155',
     overflow: 'hidden',
     ...Platform.select({
       ios: {
@@ -142,17 +118,16 @@ const styles = StyleSheet.create({
     }),
   },
 
-  // Bottom Sheet Variant Layout (surface-container-high)
   bottomSheet: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: '#222a3d',
-    borderTopLeftRadius: 12,  // rounded.md top-left
-    borderTopRightRadius: 12, // rounded.md top-right
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
     borderTopWidth: 1,
-    borderTopColor: '#334155', // slate-700
+    borderTopColor: '#334155',
     overflow: 'hidden',
     ...Platform.select({
       ios: {
@@ -167,7 +142,6 @@ const styles = StyleSheet.create({
     }),
   },
 
-  // Header components styles
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -177,10 +151,10 @@ const styles = StyleSheet.create({
   },
 
   headerTitle: {
-    fontFamily: 'Montserrat',
-    fontSize: 16,
+    fontFamily: TYPOGRAPHY.fontFamily.semibold,
+    fontSize: TYPOGRAPHY.sizes.md,
     fontWeight: '600',
-    color: '#dae2fd', // on-surface
+    color: '#dae2fd',
     flex: 1,
     marginRight: 10,
   },
@@ -195,15 +169,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  // Separation divider style (slate-700 divider spec)
   divider: {
     height: 1,
-    backgroundColor: '#334155', // slate-700
+    backgroundColor: '#334155',
     width: '100%',
   },
 
-  // Content body wrapper
   contentWrapper: {
     padding: 16,
   },
 });
+
