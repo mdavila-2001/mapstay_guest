@@ -117,7 +117,7 @@ export const PropertyDetailScreen: React.FC<PropertyDetailScreenProps> = ({
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer} bounces={false}>
         <View style={styles.heroSection}>
-          <Image source={heroImageSource} style={styles.heroImage} />
+          <Image source={heroImageSource} style={styles.heroImage} resizeMode="cover" />
 
           <View style={[styles.floatingHeader, { top: Math.max(insets.top, 16) }]}>
             <TouchableOpacity
@@ -153,6 +153,7 @@ export const PropertyDetailScreen: React.FC<PropertyDetailScreenProps> = ({
                       <Image
                         source={{ uri: ensureHttpProtocol(item.url) }}
                         style={styles.thumbnailImg}
+                        resizeMode="cover"
                       />
                     </TouchableOpacity>
                   );
@@ -302,7 +303,6 @@ const styles = StyleSheet.create({
   heroImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   floatingHeader: {
     position: 'absolute',
@@ -355,7 +355,6 @@ const styles = StyleSheet.create({
   thumbnailImg: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   bodyContent: {
     paddingHorizontal: 16,
