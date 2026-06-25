@@ -172,7 +172,7 @@ export function NotificationProvider({ children }: Readonly<NotificationProvider
     <NotificationContext.Provider value={contextValue}>
       {children}
 
-      <View style={styles.toastOverlayContainer} pointerEvents="box-none">
+      <View style={[styles.toastOverlayContainer, { pointerEvents: 'box-none' }]}>
         {toast && (
           <Animated.View
             style={[

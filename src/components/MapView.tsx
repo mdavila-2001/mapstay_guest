@@ -13,7 +13,7 @@ export interface MapMarker {
   subtitle?: string;
 }
 
-export interface MapWebViewProps {
+export interface MapViewProps {
   readonly markers: MapMarker[];
   readonly initialRegion: { latitude: number; longitude: number };
   readonly initialZoom?: number;
@@ -53,42 +53,34 @@ function buildHtml(lat: number, lng: number, zoom: number, accent: string): stri
     try {
       var map = L.map('map', { zoomControl: false, attributionControl: true })
         .setView([${lat}, ${lng}], ${zoom});
-
+ 
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap'
       }).addTo(map);
-
+ 
       var pinIcon = L.divIcon({
         className: '',
         html: '<div class="pin"></div>',
         iconSize: [18, 18],
         iconAnchor: [9, 9]
       });
-
+ 
       var markerLayer = L.layerGroup().addTo(map);
       var userLayer = L.layerGroup().addTo(map);
-
-      function escapeHtml(value) {
-        return String(value == null ? '' : value)
-          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      }
-
+ 
       window.__setMarkers = function (list) {
         markerLayer.clearLayers();
         list.forEach(function (p) {
           var marker = L.marker([p.lat, p.lng], { icon: pinIcon }).addTo(markerLayer);
-          var html = '<b>' + escapeHtml(p.title) + '</b>' +
-            (p.subtitle ? '<br/>' + escapeHtml(p.subtitle) : '');
-          marker.bindPopup(html);
           marker.on('click', function () { post({ type: 'markerPress', id: p.id }); });
         });
       };
-
+ 
       window.__setView = function (lat, lng, zoom) {
         map.setView([lat, lng], zoom || map.getZoom());
       };
-
+ 
       window.__setUser = function (lat, lng) {
         userLayer.clearLayers();
         if (lat == null || lng == null) return;
@@ -96,7 +88,7 @@ function buildHtml(lat: number, lng: number, zoom: number, accent: string): stri
           radius: 7, color: '#FFFFFF', weight: 2, fillColor: '#3B82F6', fillOpacity: 1
         }).addTo(userLayer);
       };
-
+ 
       map.whenReady(function () { post({ type: 'ready' }); });
     } catch (e) {
       post({ type: 'error', message: String(e) });
@@ -108,14 +100,14 @@ function buildHtml(lat: number, lng: number, zoom: number, accent: string): stri
 </html>`;
 }
 
-export function MapWebView({
+export function MapView({
   markers,
   initialRegion,
   initialZoom = 12,
   userLocation = null,
   onMarkerPress,
   accentColor = colors.accent,
-}: Readonly<MapWebViewProps>) {
+}: Readonly<MapViewProps>) {
   const webRef = useRef<WebView>(null);
   const [ready, setReady] = useState(false);
 

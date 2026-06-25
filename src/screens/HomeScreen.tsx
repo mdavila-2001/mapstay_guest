@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Pressable,
   Animated,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -19,28 +20,27 @@ import * as Location from 'expo-location';
 import { Header } from '../components/Header';
 import { Sidebar } from '../components/Sidebar';
 import { PropertyCard } from '../components/PropertyCard';
-import { MapWebView } from '../components/MapWebView';
+import { MapView } from '../components/MapView';
 import { AdvancedFilterModal } from '../components/AdvancedFilterModal';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
+import { MapPropertyCard } from '../components/MapPropertyCard';
 
 import { useProperties } from '../hooks/useProperties';
 import { useAuth } from '../hooks/useAuth';
 import { useNotification } from '../components/NotificationProvider';
-import { AdvancedSearchPayload } from '../types';
+import { AdvancedSearchPayload, Property } from '../types';
 import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../core/theme/theme';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-interface HomeScreenProps {
-  onNavigateToShowcase: () => void;
-  onNavigateToPropertyDetail?: (id: number) => void;
-}
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 const colors = COLORS.dark;
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({
-  onNavigateToShowcase,
-  onNavigateToPropertyDetail,
-}) => {
+export const HomeScreen: React.FC = () => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   const insets = useSafeAreaInsets();
   const { logout } = useAuth();
   const { showToast, showAlert } = useNotification();
@@ -51,6 +51,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [ciudad, setCiudad] = useState<string>('');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [filterModalVisible, setFilterModalVisible] = useState<boolean>(false);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
   const [hasLocationPermission, setHasLocationPermission] = useState<boolean>(false);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -120,27 +121,29 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     if (screenName === 'logout') {
       showAlert({
         title: '¿Cerrar Sesión?',
-        message: '¿Estás seguro de que deseas salir de MapStay Guest?',
+        message: '¿Estás seguro de que deseas salir de MapStay?',
         type: 'warning',
         confirmText: 'Salir',
         cancelText: 'Cancelar',
         onConfirm: async () => {
           await logout();
-          showToast({ message: 'Sesión cerrada correctamente.', type: 'info' });
+          showToast({ message: 'Sesión cerrada correctamente.', type: 'success' });
         },
       });
-    } else if (screenName === 'showcase') {
-      onNavigateToShowcase();
+    } else if (screenName === 'bookings') {
+      navigation.navigate('MyReservations');
     } else {
       showToast({ message: `Navegando a: ${screenName}`, type: 'info' });
     }
   };
 
   const handleSimpleSearch = () => {
+    setSelectedProperty(null);
     refetch(ciudad);
   };
 
   const handleApplyFilters = (filters: AdvancedSearchPayload) => {
+    setSelectedProperty(null);
     fetchAdvanced(filters);
   };
 
@@ -161,11 +164,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const handleMarkerPress = (id: number | string) => {
     const prop = properties.find((p) => p.id === id);
     if (prop) {
-      if (onNavigateToPropertyDetail) {
-        onNavigateToPropertyDetail(prop.id);
-      } else {
-        showToast({ message: `Detalle de ${prop.nombre}`, type: 'info' });
-      }
+      setSelectedProperty(prop);
     }
   };
 
@@ -203,11 +202,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <PropertyCard
               property={item}
               onPress={() => {
-                if (onNavigateToPropertyDetail) {
-                  onNavigateToPropertyDetail(item.id);
-                } else {
-                  showToast({ message: `Detalle de ${item.nombre}`, type: 'info' });
-                }
+                navigation.navigate('PropertyDetail', { propertyId: item.id });
               }}
             />
           )}
@@ -236,12 +231,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </Text>
           </View>
         ) : (
-          <MapWebView
+          <MapView
             markers={mapMarkers}
             initialRegion={region}
             userLocation={hasLocationPermission ? userLocation : null}
             onMarkerPress={handleMarkerPress}
             accentColor={colors.accent}
+          />
+        )}
+
+        {selectedProperty && (
+          <MapPropertyCard
+            property={selectedProperty}
+            onPress={() => navigation.navigate('PropertyDetail', { propertyId: selectedProperty.id })}
+            onClose={() => setSelectedProperty(null)}
+            bottomOffset={Math.max(insets.bottom, 16) + 16 + 44 + 12}
           />
         )}
       </View>
@@ -301,7 +305,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         <TouchableOpacity
           activeOpacity={0.8}
           style={[styles.toggleBtn, viewMode === 'list' && styles.toggleBtnActive]}
-          onPress={() => setViewMode('list')}
+          onPress={() => {
+            setViewMode('list');
+            setSelectedProperty(null);
+          }}
         >
           <Ionicons
             name={viewMode === 'list' ? 'list' : 'list-outline'}
@@ -316,7 +323,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         <TouchableOpacity
           activeOpacity={0.8}
           style={[styles.toggleBtn, viewMode === 'map' && styles.toggleBtnActive]}
-          onPress={() => setViewMode('map')}
+          onPress={() => {
+            setViewMode('map');
+          }}
         >
           <Ionicons
             name={viewMode === 'map' ? 'map' : 'map-outline'}

@@ -9,7 +9,6 @@ import {
   FlatList,
   ActivityIndicator,
   Platform,
-  Share,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,23 +18,26 @@ import { getPropertyById } from '../services/propertyService';
 import { Property } from '../types/property';
 import { Button } from '../components/Button';
 import { MapPreview } from '../components/MapPreview';
+import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+import { BookingModal } from '../components/BookingModal';
 
-interface PropertyDetailScreenProps {
-  propertyId: number;
-  onGoBack: () => void;
-}
+type PropertyDetailScreenRouteProp = RouteProp<RootStackParamList, 'PropertyDetail'>;
+type PropertyDetailScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'PropertyDetail'>;
 
-export const PropertyDetailScreen: React.FC<PropertyDetailScreenProps> = ({
-  propertyId,
-  onGoBack,
-}) => {
+export const PropertyDetailScreen: React.FC = () => {
+  const route = useRoute<PropertyDetailScreenRouteProp>();
+  const navigation = useNavigation<PropertyDetailScreenNavigationProp>();
+  const { propertyId } = route.params;
+  const onGoBack = () => navigation.goBack();
   const insets = useSafeAreaInsets();
   const [property, setProperty] = useState<Property | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState<boolean>(false);
-  const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [isBookingVisible, setIsBookingVisible] = useState<boolean>(false);
 
   useEffect(() => {
     let active = true;
@@ -74,17 +76,6 @@ export const PropertyDetailScreen: React.FC<PropertyDetailScreenProps> = ({
     return `http://${cleanUrl}`;
   };
 
-  const handleShare = async () => {
-    if (!property) return;
-    try {
-      await Share.share({
-        message: `¡Mira este hermoso alojamiento en MapStay! ${property.nombre} en ${property.ciudad}.`,
-      });
-    } catch (err) {
-      console.warn('Error al compartir propiedad:', err);
-    }
-  };
-
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centerContainer]}>
@@ -110,8 +101,10 @@ export const PropertyDetailScreen: React.FC<PropertyDetailScreenProps> = ({
     ? { uri: ensureHttpProtocol(currentPhotoUrl) }
     : require('../../assets/no_pic.png');
 
-  const lat = parseFloat(property.latitud) || -17.7828;
-  const lng = parseFloat(property.longitud) || -63.1806;
+  const parsedLat = parseFloat(property.latitud);
+  const parsedLng = parseFloat(property.longitud);
+  const lat = isNaN(parsedLat) ? -17.7828 : parsedLat;
+  const lng = isNaN(parsedLng) ? -63.1806 : parsedLng;
 
   return (
     <View style={styles.container}>
@@ -176,7 +169,7 @@ export const PropertyDetailScreen: React.FC<PropertyDetailScreenProps> = ({
 
             <View style={styles.statItem}>
               <Ionicons name="bed-outline" size={18} color="#94A3B8" />
-              <Text style={styles.statLabel}>{property.cantCamas} Habitaciones</Text>
+              <Text style={styles.statLabel}>{property.cantHabitaciones} Habitaciones</Text>
             </View>
 
             <View style={styles.statItem}>
@@ -199,13 +192,22 @@ export const PropertyDetailScreen: React.FC<PropertyDetailScreenProps> = ({
 
           {property.arrendatario && (
             <View style={styles.hostCard}>
+              <View style={styles.hostAvatar}>
+                <Text style={styles.avatarText}>
+                  {property.arrendatario.nombrecompleto ? property.arrendatario.nombrecompleto.charAt(0).toUpperCase() : 'H'}
+                </Text>
+              </View>
               <View style={styles.hostTextContainer}>
-                <Text style={styles.hostTitle}>
-                  Hospedado por:
-                </Text>
-                <Text style={styles.hostSubtitle}>
-                  {property.arrendatario.nombrecompleto} • {property.arrendatario.telefono} • {property.arrendatario.email}
-                </Text>
+                <Text style={styles.hostTitle}>Hospedado por:</Text>
+                <Text style={styles.hostName}>{property.arrendatario.nombrecompleto}</Text>
+                <View style={styles.contactInfoRow}>
+                  <Ionicons name="call-outline" size={13} color="#94A3B8" />
+                  <Text style={styles.contactText}>{property.arrendatario.telefono}</Text>
+                </View>
+                <View style={styles.contactInfoRow}>
+                  <Ionicons name="mail-outline" size={13} color="#94A3B8" />
+                  <Text style={styles.contactText}>{property.arrendatario.email}</Text>
+                </View>
               </View>
             </View>
           )}
@@ -257,9 +259,16 @@ export const PropertyDetailScreen: React.FC<PropertyDetailScreenProps> = ({
           text="Reservar"
           variant="primary"
           style={styles.reserveBtn}
-          onPress={() => console.log('Iniciar reserva para', propertyId)}
+          onPress={() => setIsBookingVisible(true)}
         />
       </View>
+      {property && (
+        <BookingModal
+          visible={isBookingVisible}
+          onClose={() => setIsBookingVisible(false)}
+          property={property}
+        />
+      )}
     </View>
   );
 };
@@ -404,7 +413,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.slate800,
     borderRadius: 12,
-    padding: 12,
+    padding: 16,
     gap: 12,
     marginBottom: 20,
   },
@@ -416,19 +425,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  avatarText: {
+    fontFamily: TYPOGRAPHY.fontFamily.bold,
+    fontSize: 16,
+    color: '#ffffff',
+  },
   hostTextContainer: {
     flex: 1,
   },
   hostTitle: {
-    fontFamily: TYPOGRAPHY.fontFamily.semibold,
-    fontSize: 14,
-    color: '#dae2fd',
-  },
-  hostSubtitle: {
     fontFamily: TYPOGRAPHY.fontFamily.regular,
     fontSize: 12,
     color: '#94A3B8',
+  },
+  hostName: {
+    fontFamily: TYPOGRAPHY.fontFamily.semibold,
+    fontSize: 15,
+    color: '#dae2fd',
     marginTop: 2,
+  },
+  contactInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 4,
+  },
+  contactText: {
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
+    fontSize: 13,
+    color: '#94A3B8',
   },
   section: {
     marginBottom: 24,

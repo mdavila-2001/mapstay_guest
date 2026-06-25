@@ -16,18 +16,17 @@ import { AuthProvider } from './src/context/AuthContext';
 import { useAuth } from './src/hooks/useAuth';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
-import TestComponents from './src/screens/TestComponents';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { PropertyDetailScreen } from './src/screens/PropertyDetailScreen';
+import { MyReservationsScreen } from './src/screens/MyReservationsScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { RootStackParamList } from './src/navigation/types';
 
-type AuthScreenName = 'login' | 'register';
-type AppRouteName = 'home' | 'showcase' | 'property-detail';
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function AppNavigator() {
   const { user, isLoading } = useAuth();
-  const [authScreen, setAuthScreen] = useState<AuthScreenName>('login');
-  const [currentRoute, setCurrentRoute] = useState<AppRouteName>('home');
-  const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(null);
 
   if (isLoading) {
     return (
@@ -37,43 +36,35 @@ function AppNavigator() {
     );
   }
 
-  if (!user) {
-    if (authScreen === 'register') {
-      return (
-        <RegisterScreen
-          onPressLogin={() => setAuthScreen('login')}
-        />
-      );
-    }
-
-    return (
-      <LoginScreen
-        onPressRegister={() => setAuthScreen('register')}
-      />
-    );
-  }
-
-  if (currentRoute === 'showcase') {
-    return <TestComponents onNavigateToHome={() => setCurrentRoute('home')} />;
-  }
-
-  if (currentRoute === 'property-detail' && selectedPropertyId !== null) {
-    return (
-      <PropertyDetailScreen
-        propertyId={selectedPropertyId}
-        onGoBack={() => setCurrentRoute('home')}
-      />
-    );
-  }
-
   return (
-    <HomeScreen
-      onNavigateToShowcase={() => setCurrentRoute('showcase')}
-      onNavigateToPropertyDetail={(id) => {
-        setSelectedPropertyId(id);
-        setCurrentRoute('property-detail');
-      }}
-    />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {user ? (
+        <>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="PropertyDetail" component={PropertyDetailScreen} />
+          <Stack.Screen name="MyReservations" component={MyReservationsScreen} />
+        </>
+      ) : (
+        <>
+          <Stack.Screen name="Login">
+            {(props) => (
+              <LoginScreen
+                {...props}
+                onPressRegister={() => props.navigation.navigate('Register')}
+              />
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="Register">
+            {(props) => (
+              <RegisterScreen
+                {...props}
+                onPressLogin={() => props.navigation.navigate('Login')}
+              />
+            )}
+          </Stack.Screen>
+        </>
+      )}
+    </Stack.Navigator>
   );
 }
 
@@ -110,7 +101,9 @@ function Root() {
     <SafeAreaProvider>
       <NotificationProvider>
         <AuthProvider>
-          <AppNavigator />
+          <NavigationContainer>
+            <AppNavigator />
+          </NavigationContainer>
         </AuthProvider>
       </NotificationProvider>
     </SafeAreaProvider>

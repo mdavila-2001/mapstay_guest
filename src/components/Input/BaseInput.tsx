@@ -38,8 +38,7 @@ export const BaseInput: React.FC<BaseInputProps> = ({
         ]}
       >
         <View
-          style={styles.innerRow}
-          pointerEvents={onPressContainer ? 'none' : 'auto'}
+          style={[styles.innerRow, { pointerEvents: onPressContainer ? 'none' : 'auto' }]}
         >
 
           {iconName ? (

@@ -1,3 +1,5 @@
+import { Reservation } from './reservation';
+
 export interface Host {
   id: number;
   nombrecompleto: string;
@@ -38,6 +40,7 @@ export interface Property {
   updated_at: string;
   arrendatario: Host;
   fotos: PropertyImage[];
+  reservas?: Reservation[];
 }
 
 export interface AdvancedSearchPayload {

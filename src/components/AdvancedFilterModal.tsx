@@ -450,6 +450,9 @@ const styles = StyleSheet.create({
       android: {
         elevation: 4,
       },
+      web: {
+        boxShadow: '0px 2px 2px rgba(0,0,0,0.3)',
+      },
     }),
   },
   sliderLabelsRow: {

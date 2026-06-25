@@ -103,12 +103,7 @@ export function Sidebar({
           onPress={() => onNavigate('bookings')}
         />
 
-        <SidebarItem
-          title="Showcase de Componentes"
-          iconName="color-palette-outline"
-          isActive={currentRoute === 'showcase'}
-          onPress={() => onNavigate('showcase')}
-        />
+
       </ScrollView>
 
       <View style={[styles.footerArea, footerPaddingBottom]}>

@@ -14,6 +14,8 @@ export const DateInput: React.FC<InputProps> = ({
   value,
   onValueChange,
   placeholder,
+  minimumDate,
+  maximumDate,
 }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [tempDate, setTempDate] = useState<Date>(value instanceof Date ? value : new Date());
@@ -91,6 +93,8 @@ export const DateInput: React.FC<InputProps> = ({
             display="default"
             onValueChange={handleDateChange}
             onDismiss={handleClosePicker}
+            minimumDate={minimumDate}
+            maximumDate={maximumDate}
           />
         ) : (
 
@@ -121,6 +125,8 @@ export const DateInput: React.FC<InputProps> = ({
                   themeVariant="dark"
                   onValueChange={handleDateChange}
                   onDismiss={handleClosePicker}
+                  minimumDate={minimumDate}
+                  maximumDate={maximumDate}
                 />
               </Pressable>
             </Pressable>

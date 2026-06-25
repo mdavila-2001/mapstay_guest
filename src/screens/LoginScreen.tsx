@@ -183,7 +183,7 @@ export function LoginScreen({ onPressMenu, onPressRegister }: Readonly<LoginScre
   return (
     <KeyboardAvoidingView
       style={styles.keyboardContainer}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView
         style={styles.scrollContainer}

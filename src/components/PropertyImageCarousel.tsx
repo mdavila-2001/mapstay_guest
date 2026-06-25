@@ -62,7 +62,7 @@ export function PropertyImageCarousel({ photos }: Readonly<PropertyImageCarousel
         ))}
       </ScrollView>
 
-      <View style={styles.dotsContainer} pointerEvents="none">
+      <View style={[styles.dotsContainer, { pointerEvents: 'none' }]}>
         {photos.map((uri, index) => (
           <View
             key={`dot-${uri}-${index}`}

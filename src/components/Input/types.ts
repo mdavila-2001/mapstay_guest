@@ -17,6 +17,8 @@ export interface InputProps extends Omit<TextInputProps, 'value' | 'onChangeText
   onValueChange?: (value: any) => void;
   containerStyle?: StyleProp<ViewStyle>;
   inputContainerStyle?: StyleProp<ViewStyle>;
+  minimumDate?: Date;
+  maximumDate?: Date;
 }
 
 export interface BaseInputProps {
